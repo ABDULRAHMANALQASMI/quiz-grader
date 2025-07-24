@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Online Quiz Auto-Grading Simulator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 700px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+      color: #34495e;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 25px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #ecf0f1;
+    }
+
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      font-size: 0.95em;
+      color: #555;
+      border-top: 1px dashed #aaa;
+      text-align: center;
+    }
+
+    .footer strong {
+      color: #e74c3c;
+    }
+
+    .note {
+      color: #e67e22;
+      font-size: 0.9em;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .final-message {
+      text-align: center;
+      font-size: 1em;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-top: 20px;
+      background-color: #f1f8ff;
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📘 Online Quiz Auto-Grading Simulator</h1>
+
+    <label for="modelAnswer">Model Answer (10 letters A/B/C/D/X):</label>
+    <input type="text" id="modelAnswer" placeholder="e.g. ABCDABCDAB">
+
+    <label for="studentAnswer">Student Answer (10 letters A/B/C/D/X):</label>
+    <input type="text" id="studentAnswer" placeholder="e.g. BBddAabdDB">
+
+    <button onclick="gradeQuiz()">Grade Now</button>
+
+    <div id="resultArea"></div>
+
+    <div class="footer">
+      Student: <strong>Abdulrahman Mohammed Al-Qasmi</strong><br>
+      ID: <strong>126840</strong> | Section: <strong>02</strong> | Course: <strong>COMP2101</strong><br><br>
+      Thank you for using our <strong>COMP2101</strong> quiz grader. Good luck! 🌟
+    </div>
+  </div>
+
+  <script>
+    const QUESTIONS = 10;
+
+    function validate(input) {
+      const answer = input.trim().toUpperCase();
+      if (answer.length !== QUESTIONS) {
+        alert("Answer must be exactly 10 characters.");
+        return false;
+      }
+      if (!/^[ABCDX]+$/i.test(answer)) {
+        alert("Answer can only contain A, B, C, D, or X.");
+        return false;
+      }
+      return true;
+    }
+
+    function gradeQuiz() {
+      const model = document.getElementById('modelAnswer').value.toUpperCase();
+      const student = document.getElementById('studentAnswer').value.toUpperCase();
+      const resultDiv = document.getElementById('resultArea');
+      resultDiv.innerHTML = '';
+
+      if (!validate(model) || !validate(student)) return;
+
+      let score = 0;
+      let incorrect = 0;
+      let tableHTML = `
+        <h3>Grading Result</h3>
+        <table>
+          <tr>
+            <th>Question #</th>
+            <th>Student Answer</th>
+            <th>Model Answer</th>
+            <th>Result</th>
+          </tr>
+      `;
+
+      for (let i = 0; i < QUESTIONS; i++) {
+        const s = student[i];
+        const m = model[i];
+        let result = '';
+        if (s === m) {
+          score++;
+          result = '✔️ Correct';
+        } else {
+          incorrect++;
+          result = `❌ Incorrect`;
+        }
+        tableHTML += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${s}</td>
+            <td>${m}</td>
+            <td>${result}</td>
+          </tr>
+        `;
+      }
+
+      tableHTML += `</table>`;
+
+      let performance = '';
+      if (score >= 9) performance = "🌟 Excellent!";
+      else if (score >= 5 && score < 9) performance = "👍 Very Good!";
+      else if (score >= 3 && score < 5) performance = "🙂 Good.";
+      else if (score >= 1 && score < 3) performance = "😐 Fair.";
+      else performance = "❌ Failed.";
+
+      tableHTML += `<p class="note" style="font-size: 1.2em; color: #d35400; background-color: #fcf3cf; padding: 10px; border-radius: 10px;">
+  * Total Score: <strong>${score} / 10</strong> | Incorrect Answers: <strong>${incorrect}</strong>
+</p>`;
+      tableHTML += `<div class="final-message">${performance}<br>Keep going and good luck! 🍀</div>`;
+
+      resultDiv.innerHTML = tableHTML;
+    }
+  </script>
+</body>
+</html>
